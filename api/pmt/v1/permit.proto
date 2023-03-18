@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package api.pmt.v1;
+import "google/api/annotations.proto";
+
+option go_package = "ms-adm-pmt/api/pmt/v1;v1";
+option java_multiple_files = true;
+option java_package = "ApiPmtV1";
+
+// 授权功能
+service Permit {
+	// 授权码获取AccessToken
+	rpc Auth (AuthRequest) returns (AuthReply){
+		option (google.api.http) = {
+			post: "/api/permit/v1/auth"
+			body: "*"
+		};
+	}
+	// 具体权限点验证授权
+	rpc Pmt (PmtRequest) returns (PmtReply){
+		option (google.api.http) = {
+			post: "/api/permit/v1/pmt"
+			body: "*"
+		};
+	}
+	// 所有权限点的授权结果
+	rpc PmtAll (PmtAllRequest) returns (PmtAllReply){
+		option (google.api.http) = {
+			post: "/api/permit/v1/pmtall"
+			body: "*"
+		};
+	}
+}
+
+message AuthRequest{}
+
+message AuthReply{
+	int64 id = 1;
+	int64 uid =2;
+	string userId= 3;
+	string userName= 4;
+	int64 roleId = 5;
+	string accessToken= 6;
+	string loginUrl = 7;
+	string logoutUrl = 8;
+	string callBackUrl = 9;
+	int64 appId = 11;
+	string appName = 12;
+	string appUniqId = 13;
+	map<string,int64> pmts = 14;
+}
+
+message PmtRequest {
+	repeated string keys = 4;
+}
+message PmtReply {
+	string appId=1;
+	string appName=2;
+	string loginUrl = 3;
+	string logoutUrl = 4;
+	map<string,int64> pmts = 5;
+}
+
+message PmtAllRequest {}
+message PmtAllReply {
+	string appId=1;
+	string appName=2;
+	string loginUrl = 3;
+	string logoutUrl = 4;
+	map<string,int64> pmts = 5;
+}

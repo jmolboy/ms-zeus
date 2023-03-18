@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package api.pmt.v1;
+import "google/api/annotations.proto";
+option go_package = "ms-adm-pmt/api/pmt/v1;v1";
+option java_multiple_files = true;
+option java_package = "api.pmt.v1";
+
+service Publish {
+	rpc Pub (PubRequest) returns (PubReply){
+		option (google.api.http) = {
+			post: "/api/publish/v1/pub"
+			body: "*"
+		};
+	}
+}
+
+message Node{
+	string name = 1;
+	string key = 2;
+	int64 val = 3;
+	repeated Node children=4;
+}
+
+message PubRequest {
+	string appId=1;
+	string access_key=2;
+	string access_secret=3;
+	Node pmtTree = 4;
+	string login_url = 5;
+	string logout_url = 6;
+}
+
+message PubReply {
+	string appId=1;
+	string appName = 2;
+	Node pmtTree = 3;
+	string login_url = 4;
+	string logout_url = 5;
+}
