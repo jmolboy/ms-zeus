@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	OpUser_Current_FullMethodName = "/api.zeus.v1.OpUser/Current"
+	OpUser_Logout_FullMethodName  = "/api.zeus.v1.OpUser/Logout"
 )
 
 // OpUserClient is the client API for OpUser service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type OpUserClient interface {
 	Current(ctx context.Context, in *CurrentRequest, opts ...grpc.CallOption) (*CurrentReply, error)
+	Logout(ctx context.Context, in *LogOutRequest, opts ...grpc.CallOption) (*LogOutReply, error)
 }
 
 type opUserClient struct {
@@ -46,11 +48,21 @@ func (c *opUserClient) Current(ctx context.Context, in *CurrentRequest, opts ...
 	return out, nil
 }
 
+func (c *opUserClient) Logout(ctx context.Context, in *LogOutRequest, opts ...grpc.CallOption) (*LogOutReply, error) {
+	out := new(LogOutReply)
+	err := c.cc.Invoke(ctx, OpUser_Logout_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // OpUserServer is the server API for OpUser service.
 // All implementations must embed UnimplementedOpUserServer
 // for forward compatibility
 type OpUserServer interface {
 	Current(context.Context, *CurrentRequest) (*CurrentReply, error)
+	Logout(context.Context, *LogOutRequest) (*LogOutReply, error)
 	mustEmbedUnimplementedOpUserServer()
 }
 
@@ -60,6 +72,9 @@ type UnimplementedOpUserServer struct {
 
 func (UnimplementedOpUserServer) Current(context.Context, *CurrentRequest) (*CurrentReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Current not implemented")
+}
+func (UnimplementedOpUserServer) Logout(context.Context, *LogOutRequest) (*LogOutReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
 }
 func (UnimplementedOpUserServer) mustEmbedUnimplementedOpUserServer() {}
 
@@ -92,6 +107,24 @@ func _OpUser_Current_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _OpUser_Logout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LogOutRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OpUserServer).Logout(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OpUser_Logout_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OpUserServer).Logout(ctx, req.(*LogOutRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // OpUser_ServiceDesc is the grpc.ServiceDesc for OpUser service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -102,6 +135,10 @@ var OpUser_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Current",
 			Handler:    _OpUser_Current_Handler,
+		},
+		{
+			MethodName: "Logout",
+			Handler:    _OpUser_Logout_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

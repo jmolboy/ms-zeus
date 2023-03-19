@@ -31,3 +31,9 @@ func (s *OpUserService) Current(ctx context.Context, req *pb.CurrentRequest) (rp
 	}
 	return
 }
+
+func (s *OpUserService) Logout(context.Context, *pb.LogOutRequest) (*pb.LogOutReply, error) {
+	// 获取
+
+	return nil, nil
+}

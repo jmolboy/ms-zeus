@@ -20,14 +20,17 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 const OperationOpUserCurrent = "/api.zeus.v1.OpUser/Current"
+const OperationOpUserLogout = "/api.zeus.v1.OpUser/Logout"
 
 type OpUserHTTPServer interface {
 	Current(context.Context, *CurrentRequest) (*CurrentReply, error)
+	Logout(context.Context, *LogOutRequest) (*LogOutReply, error)
 }
 
 func RegisterOpUserHTTPServer(s *http.Server, srv OpUserHTTPServer) {
 	r := s.Route("/")
 	r.GET("/api/opuser/v1/current", _OpUser_Current0_HTTP_Handler(srv))
+	r.POST("/api/opuser/v1/logout", _OpUser_Logout0_HTTP_Handler(srv))
 }
 
 func _OpUser_Current0_HTTP_Handler(srv OpUserHTTPServer) func(ctx http.Context) error {
@@ -49,8 +52,28 @@ func _OpUser_Current0_HTTP_Handler(srv OpUserHTTPServer) func(ctx http.Context) 
 	}
 }
 
+func _OpUser_Logout0_HTTP_Handler(srv OpUserHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in LogOutRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationOpUserLogout)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.Logout(ctx, req.(*LogOutRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*LogOutReply)
+		return ctx.Result(200, reply)
+	}
+}
+
 type OpUserHTTPClient interface {
 	Current(ctx context.Context, req *CurrentRequest, opts ...http.CallOption) (rsp *CurrentReply, err error)
+	Logout(ctx context.Context, req *LogOutRequest, opts ...http.CallOption) (rsp *LogOutReply, err error)
 }
 
 type OpUserHTTPClientImpl struct {
@@ -68,6 +91,19 @@ func (c *OpUserHTTPClientImpl) Current(ctx context.Context, in *CurrentRequest, 
 	opts = append(opts, http.Operation(OperationOpUserCurrent))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *OpUserHTTPClientImpl) Logout(ctx context.Context, in *LogOutRequest, opts ...http.CallOption) (*LogOutReply, error) {
+	var out LogOutReply
+	pattern := "/api/opuser/v1/logout"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationOpUserLogout))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

@@ -18,6 +18,9 @@ import (
 
 const no_service_conf = "NO_PMT_SERVICE_CONF"
 
+const AUTH_PATH = "/api/auth/accesstoken"
+const LOG_OUT_PATH = "/api/auth/logout"
+
 type ZeusApp struct {
 	pmt    *service.PmtService
 	opuser *service.OpUserService
@@ -27,6 +30,10 @@ type ZeusApp struct {
 
 func (z *ZeusApp) PmtSvc() *service.PmtService {
 	return z.pmt
+}
+
+func (z *ZeusApp) OpUserSvc() *service.OpUserService {
+	return z.opuser
 }
 
 func newZeusApp(pmtc *opt.ServiceConf, pmt *service.PmtService, opuser *service.OpUserService, logger log.Logger) *ZeusApp {
@@ -75,7 +82,7 @@ func (z *ZeusApp) AuthHandler(handlerOpts ...opt.HandlerOption) http.Handler {
 	}
 
 	r := mux.NewRouter()
-	r.HandleFunc("/api/auth/accesstoken", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc(AUTH_PATH, func(w http.ResponseWriter, r *http.Request) {
 		// 从请求获取ticket
 		q := r.URL.Query()
 		authToken := q.Get(opts.AuthQueryStringName)
@@ -98,6 +105,23 @@ func (z *ZeusApp) AuthHandler(handlerOpts ...opt.HandlerOption) http.Handler {
 			w.Header().Add("Set-Cookie", accCookie.String())
 		}
 		z.redirect(w, r, accessToken.CallBackUrl)
+	}).Methods("GET")
+
+	r.HandleFunc(LOG_OUT_PATH, func(w http.ResponseWriter, r *http.Request) {
+		// 写到客户端的cookie里去
+		rply, err := z.OpUserSvc().Logout(r.Context(), &zeusv1.LogOutRequest{})
+		if err != nil {
+			z.writeText(w, err)
+			return
+		}
+		rply.Redirect = opts.HomeUrl
+
+		if opts.CookieName != "" {
+			accCookie := pmtjwt.NewAuthCookie(url.QueryEscape(""), time.Second)
+			w.Header().Add("Set-Cookie", accCookie.String())
+		}
+		z.writeText(w, rply)
+		return
 	}).Methods("GET")
 
 	// 打开测试的cookie，方便app开发调试

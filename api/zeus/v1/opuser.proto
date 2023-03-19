@@ -12,6 +12,13 @@ service OpUser {
 			get: "/api/opuser/v1/current"
 		};
 	}
+
+	rpc Logout (LogOutRequest) returns (LogOutReply){
+		option (google.api.http) = {
+			post: "/api/opuser/v1/logout"
+			body: "*"
+		};
+	}
 }
 
 message CurrentRequest{}
@@ -22,4 +29,10 @@ message CurrentReply{
 	string userId= 3;
 	string userName= 4;
 	int64 roleId = 5;
+}
+
+message LogOutRequest{}
+
+message LogOutReply{
+	string redirect=1;
 }

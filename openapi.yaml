@@ -18,6 +18,24 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/api.zeus.v1.CurrentReply'
+    /api/opuser/v1/logout:
+        post:
+            tags:
+                - OpUser
+            operationId: OpUser_Logout
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/api.zeus.v1.LogOutRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/api.zeus.v1.LogOutReply'
     /api/permit/v1/auth:
         post:
             tags:
@@ -234,6 +252,14 @@ components:
                 roleId:
                     type: integer
                     format: int64
+        api.zeus.v1.LogOutReply:
+            type: object
+            properties:
+                redirect:
+                    type: string
+        api.zeus.v1.LogOutRequest:
+            type: object
+            properties: {}
 tags:
     - name: OpUser
     - name: Permit
