@@ -114,7 +114,7 @@ func (z *ZeusApp) AuthHandler(handlerOpts ...opt.HandlerOption) http.Handler {
 			z.writeText(w, err)
 			return
 		}
-		rply.Redirect = opts.HomeUrl
+		rply.Data = opts.HomeUrl
 
 		if opts.CookieName != "" {
 			accCookie := pmtjwt.NewAuthCookie(url.QueryEscape(""), time.Second)

@@ -23,16 +23,20 @@ func (s *OpUserService) Current(ctx context.Context, req *pb.CurrentRequest) (rp
 	}
 
 	rply = &pb.CurrentReply{
-		Id:       jwtUsr.Id,
-		Uid:      jwtUsr.Id,
-		UserId:   jwtUsr.UserId,
-		UserName: jwtUsr.UserName,
-		RoleId:   jwtUsr.RoleId,
+		Data: &pb.CurrentUser{
+			Id:       jwtUsr.Id,
+			Uid:      jwtUsr.Id,
+			UserId:   jwtUsr.UserId,
+			UserName: jwtUsr.UserName,
+			RoleId:   jwtUsr.RoleId,
+		},
 	}
 	return
 }
 
 func (s *OpUserService) Logout(context.Context, *pb.LogOutRequest) (*pb.LogOutReply, error) {
 	// 获取
-	return &pb.LogOutReply{}, nil
+	return &pb.LogOutReply{
+		Data: "",
+	}, nil
 }

@@ -23,7 +23,7 @@ service OpUser {
 
 message CurrentRequest{}
 
-message CurrentReply{
+message CurrentUser{
 	int64 id = 1;
 	int64 uid =2;
 	string userId= 3;
@@ -31,8 +31,16 @@ message CurrentReply{
 	int64 roleId = 5;
 }
 
+message CurrentReply{
+	int64 success = 1;
+	string msg=2;
+	CurrentUser data=3;
+}
+
 message LogOutRequest{}
 
 message LogOutReply{
-	string redirect=1;
+	int64 success = 1;
+	string msg=2;
+	string data=3;
 }
