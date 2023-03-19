@@ -23,6 +23,8 @@ func (s *OpUserService) Current(ctx context.Context, req *pb.CurrentRequest) (rp
 	}
 
 	rply = &pb.CurrentReply{
+		Success: 1,
+		Msg:     "",
 		Data: &pb.CurrentUser{
 			Id:       jwtUsr.Id,
 			Uid:      jwtUsr.Id,
@@ -37,6 +39,8 @@ func (s *OpUserService) Current(ctx context.Context, req *pb.CurrentRequest) (rp
 func (s *OpUserService) Logout(context.Context, *pb.LogOutRequest) (*pb.LogOutReply, error) {
 	// 获取
 	return &pb.LogOutReply{
-		Data: "",
+		Success: 1,
+		Msg:     "",
+		Data:    "",
 	}, nil
 }
